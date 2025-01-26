@@ -1,7 +1,7 @@
-
 import domain.LottoNumber;
 import domain.LottoResult;
 import domain.LottoTicket;
+import domain.Prize;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -63,6 +63,13 @@ public class LottoTest {
             assertThat(number15a.hashCode()).isEqualTo(number15b.hashCode());
 
             assertThat(number15a).isNotEqualTo(number25);
+        }
+
+        @Test
+        @DisplayName("LottoNumber toString 테스트")
+        void toStringTest() {
+            LottoNumber number = new LottoNumber(7);
+            assertThat(number.toString()).isEqualTo("7");
         }
     }
 
@@ -145,8 +152,27 @@ public class LottoTest {
 
             assertThat(matchCount).isEqualTo(3);
         }
-    }
 
+        @Test
+        @DisplayName("로또 티켓에 특정 번호가 포함되어 있는지 확인 테스트")
+        void containsNumberTest() {
+            List<LottoNumber> ticketNumbers = Arrays.asList(
+                    new LottoNumber(5),
+                    new LottoNumber(12),
+                    new LottoNumber(23),
+                    new LottoNumber(34),
+                    new LottoNumber(40),
+                    new LottoNumber(45)
+            );
+            LottoTicket ticket = new LottoTicket(ticketNumbers);
+
+            LottoNumber numberToCheck1 = new LottoNumber(23);
+            LottoNumber numberToCheck2 = new LottoNumber(42);
+
+            assertThat(ticket.containsNumber(numberToCheck1)).isTrue();
+            assertThat(ticket.containsNumber(numberToCheck2)).isFalse();
+        }
+    }
 
     @Nested
     class LottoResultTest {
@@ -154,33 +180,146 @@ public class LottoTest {
         @Test
         @DisplayName("LottoResult 생성 및 수익률 계산 테스트")
         void createLottoResultAndCalculateRateOfReturn() {
-            int match3 = 1;
-            int match4 = 0;
-            int match5 = 0;
-            int match6 = 1;
-            int purchaseAmount = 14000;
+            List<LottoTicket> tickets = Arrays.asList(
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(5),
+                            new LottoNumber(12),
+                            new LottoNumber(23),
+                            new LottoNumber(34),
+                            new LottoNumber(40),
+                            new LottoNumber(45)
+                    )),
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(5),
+                            new LottoNumber(12),
+                            new LottoNumber(23),
+                            new LottoNumber(34),
+                            new LottoNumber(40),
+                            new LottoNumber(7)
+                    ))
+            );
 
-            LottoResult result = new LottoResult(match3, match4, match5, match6);
+            List<LottoNumber> winningNumbers = Arrays.asList(
+                    new LottoNumber(5),
+                    new LottoNumber(12),
+                    new LottoNumber(23),
+                    new LottoNumber(34),
+                    new LottoNumber(40),
+                    new LottoNumber(45)
+            );
 
-            double rateOfReturn = result.calculateRateOfReturn(purchaseAmount);
+            LottoNumber bonusNumber = new LottoNumber(7);
 
-            assertThat(result.getMatch3()).isEqualTo(match3);
-            assertThat(result.getMatch4()).isEqualTo(match4);
-            assertThat(result.getMatch5()).isEqualTo(match5);
-            assertThat(result.getMatch6()).isEqualTo(match6);
-            assertThat(rateOfReturn).isEqualTo(2000005000 / 14000.0);
+            LottoResult result = LottoResult.calculateLottoResult(tickets, winningNumbers, bonusNumber);
+
+            assertThat(result.getCount(Prize.FIRST)).isEqualTo(1);
+            assertThat(result.getCount(Prize.SECOND)).isEqualTo(1);
+            assertThat(result.getCount(Prize.FIFTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.FOURTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.THIRD)).isEqualTo(0);
+
+            long totalPrize = Prize.FIRST.getPrizeAmount() * 1 + Prize.SECOND.getPrizeAmount() * 1;
+            int purchaseAmount = 2000;
+            double expectedRateOfReturn = (double) totalPrize / purchaseAmount;
+
+            assertThat(result.calculateRateOfReturn(purchaseAmount)).isEqualTo(expectedRateOfReturn);
+        }
+
+        @Test
+        @DisplayName("2등 당첨(5개 일치 + 보너스 볼 일치) 테스트")
+        void calculateSecondPrize() {
+            List<LottoTicket> tickets = Arrays.asList(
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(5),
+                            new LottoNumber(12),
+                            new LottoNumber(23),
+                            new LottoNumber(34),
+                            new LottoNumber(40),
+                            new LottoNumber(45)
+                    )),
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(5),
+                            new LottoNumber(12),
+                            new LottoNumber(23),
+                            new LottoNumber(34),
+                            new LottoNumber(40),
+                            new LottoNumber(7)
+                    ))
+            );
+
+            List<LottoNumber> winningNumbers = Arrays.asList(
+                    new LottoNumber(5),
+                    new LottoNumber(12),
+                    new LottoNumber(23),
+                    new LottoNumber(34),
+                    new LottoNumber(40),
+                    new LottoNumber(45)
+            );
+
+            LottoNumber bonusNumber = new LottoNumber(7);
+
+            LottoResult result = LottoResult.calculateLottoResult(tickets, winningNumbers, bonusNumber);
+
+            assertThat(result.getCount(Prize.FIRST)).isEqualTo(1);
+            assertThat(result.getCount(Prize.SECOND)).isEqualTo(1);
+            assertThat(result.getCount(Prize.FIFTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.FOURTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.THIRD)).isEqualTo(0);
+
+            long totalPrize = Prize.FIRST.getPrizeAmount() * 1 + Prize.SECOND.getPrizeAmount() * 1;
+            int purchaseAmount = 2000; // 2 tickets * 1000
+            double expectedRateOfReturn = (double) totalPrize / purchaseAmount;
+
+            assertThat(result.calculateRateOfReturn(purchaseAmount)).isEqualTo(expectedRateOfReturn);
+        }
+
+        @Test
+        @DisplayName("5개 일치 + 보너스 볼 불일치 시 5등 당첨 테스트")
+        void calculateFifthPrizeWithoutBonus() {
+            List<LottoTicket> tickets = Arrays.asList(
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(5),
+                            new LottoNumber(12),
+                            new LottoNumber(23),
+                            new LottoNumber(34),
+                            new LottoNumber(40),
+                            new LottoNumber(7)
+                    ))
+            );
+
+            List<LottoNumber> winningNumbers = Arrays.asList(
+                    new LottoNumber(5),
+                    new LottoNumber(12),
+                    new LottoNumber(23),
+                    new LottoNumber(34),
+                    new LottoNumber(40),
+                    new LottoNumber(45)
+            );
+
+            LottoNumber bonusNumber = new LottoNumber(8);
+
+            LottoResult result = LottoResult.calculateLottoResult(tickets, winningNumbers, bonusNumber);
+
+            assertThat(result.getCount(Prize.FIRST)).isEqualTo(0);
+            assertThat(result.getCount(Prize.SECOND)).isEqualTo(0);
+            assertThat(result.getCount(Prize.FIFTH)).isEqualTo(1);
+            assertThat(result.getCount(Prize.FOURTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.THIRD)).isEqualTo(0);
+
+            long totalPrize = Prize.FIFTH.getPrizeAmount() * 1;
+            int purchaseAmount = 1000;
+            double expectedRateOfReturn = (double) totalPrize / purchaseAmount;
+
+            assertThat(result.calculateRateOfReturn(purchaseAmount)).isEqualTo(expectedRateOfReturn);
         }
 
         @Test
         @DisplayName("구매 금액이 0일 때 수익률 계산 테스트")
         void calculateRateOfReturnWithZeroPurchase() {
-            int match3 = 0;
-            int match4 = 0;
-            int match5 = 0;
-            int match6 = 0;
-            int purchaseAmount = 0;
 
-            LottoResult result = new LottoResult(match3, match4, match5, match6);
+            LottoResult result = new LottoResult();
+
+            int purchaseAmount = 0;
 
             double rateOfReturn = result.calculateRateOfReturn(purchaseAmount);
 
