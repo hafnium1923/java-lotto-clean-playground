@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class LottoTicket {
+    private final List<LottoNumber> numbers;
+
     public List<LottoNumber> getNumbers() {
         return numbers;
     }
-
-    private final List<LottoNumber> numbers;
 
     public LottoTicket(List<LottoNumber> numbers) {
         if (numbers.size() != 6) {
