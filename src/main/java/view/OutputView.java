@@ -7,8 +7,8 @@ import domain.Prize;
 import java.util.List;
 
 public class OutputView {
-    public void printPurchaseLotto(int numberOfTickets, List<LottoTicket> lottoTickets) {
-        System.out.println(numberOfTickets + "개를 구매했습니다.");
+    public void printPurchaseLotto(int manualCount, int autoCount, List<LottoTicket> lottoTickets) {
+        System.out.printf("수동으로 %d장, 자동으로 %d개를 구매했습니다.\n", manualCount, autoCount);
         for (LottoTicket ticket : lottoTickets) {
             System.out.println(ticket);
         }

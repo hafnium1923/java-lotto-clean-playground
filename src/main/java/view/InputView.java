@@ -25,6 +25,57 @@ public class InputView {
         }
     }
 
+    public int getNumberOfManualTickets(int totalTickets) {
+        while (true) {
+            System.out.println("수동으로 구매할 로또 수를 입력해 주세요.");
+            String input = scanner.nextLine();
+            try {
+                int manualTickets = Integer.parseInt(input);
+                if (manualTickets >= 0 && manualTickets <= totalTickets) {
+                    return manualTickets;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("유효한 로또 수를 입력해주세요.");
+            }
+        }
+    }
+
+    public List<List<LottoNumber>> getManualNumbers(int manualTicketsCount) {
+        List<List<LottoNumber>> manualTickets = new ArrayList<>();
+        System.out.println("수동으로 구매할 번호를 입력해 주세요.");
+
+        for (int i = 0; i < manualTicketsCount; i++) {
+            while (true) {
+                String input = scanner.nextLine();
+                try {
+                    String[] tokens = input.split(",");
+                    if (tokens.length != 6) {
+                        throw new IllegalArgumentException("로또 번호는 6개여야 합니다.");
+                    }
+
+                    List<LottoNumber> manualNumbers = new ArrayList<>();
+                    for (String token : tokens) {
+                        int num = Integer.parseInt(token.trim());
+                        manualNumbers.add(new LottoNumber(num));
+                    }
+
+
+                    long distinctCount = manualNumbers.stream().distinct().count();
+                    if (distinctCount != 6) {
+                        throw new IllegalArgumentException("로또 번호는 중복될 수 없습니다.");
+                    }
+
+                    manualTickets.add(manualNumbers);
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("유효한 번호를 입력해주세요. 예: 8,21,23,41,42,43");
+                }
+            }
+        }
+
+        return manualTickets;
+    }
+
     public List<LottoNumber> getWinningNumbers() {
         while (true) {
             System.out.println("지난 주 당첨 번호를 입력해 주세요.");
