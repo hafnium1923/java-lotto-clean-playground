@@ -178,6 +178,76 @@ public class LottoTest {
     class LottoResultTest {
 
         @Test
+        @DisplayName("수동 로또 티켓과 자동 로또 티켓을 통합하여 당첨 결과 계산 테스트")
+        void testManualAndAutomaticTicketsIntegration() {
+            List<LottoTicket> manualTickets = Arrays.asList(
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(8),
+                            new LottoNumber(21),
+                            new LottoNumber(23),
+                            new LottoNumber(41),
+                            new LottoNumber(42),
+                            new LottoNumber(43)
+                    )),
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(3),
+                            new LottoNumber(5),
+                            new LottoNumber(11),
+                            new LottoNumber(16),
+                            new LottoNumber(32),
+                            new LottoNumber(38)
+                    ))
+            );
+
+            List<LottoTicket> autoTickets = Arrays.asList(
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(1),
+                            new LottoNumber(8),
+                            new LottoNumber(11),
+                            new LottoNumber(31),
+                            new LottoNumber(41),
+                            new LottoNumber(42)
+                    )),
+                    new LottoTicket(Arrays.asList(
+                            new LottoNumber(13),
+                            new LottoNumber(14),
+                            new LottoNumber(16),
+                            new LottoNumber(38),
+                            new LottoNumber(42),
+                            new LottoNumber(45)
+                    ))
+            );
+
+            List<LottoTicket> allTickets = Arrays.asList(
+                    manualTickets.get(0),
+                    manualTickets.get(1),
+                    autoTickets.get(0),
+                    autoTickets.get(1)
+            );
+
+            List<LottoNumber> winningNumbers = Arrays.asList(
+                    new LottoNumber(1),
+                    new LottoNumber(2),
+                    new LottoNumber(3),
+                    new LottoNumber(4),
+                    new LottoNumber(5),
+                    new LottoNumber(6)
+            );
+            LottoNumber bonusNumber = new LottoNumber(7);
+
+            LottoResult result = LottoResult.calculateLottoResult(allTickets, winningNumbers, bonusNumber);
+
+
+            assertThat(result.getCount(Prize.FIRST)).isEqualTo(0);
+            assertThat(result.getCount(Prize.SECOND)).isEqualTo(0);
+            assertThat(result.getCount(Prize.FIFTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.FOURTH)).isEqualTo(0);
+            assertThat(result.getCount(Prize.THIRD)).isEqualTo(0);
+
+            assertThat(result.calculateRateOfReturn(4000)).isEqualTo(0.0);
+        }
+
+        @Test
         @DisplayName("LottoResult 생성 및 수익률 계산 테스트")
         void createLottoResultAndCalculateRateOfReturn() {
             List<LottoTicket> tickets = Arrays.asList(
@@ -267,7 +337,7 @@ public class LottoTest {
             assertThat(result.getCount(Prize.THIRD)).isEqualTo(0);
 
             long totalPrize = Prize.FIRST.getPrizeAmount() * 1 + Prize.SECOND.getPrizeAmount() * 1;
-            int purchaseAmount = 2000; // 2 tickets * 1000
+            int purchaseAmount = 2000;
             double expectedRateOfReturn = (double) totalPrize / purchaseAmount;
 
             assertThat(result.calculateRateOfReturn(purchaseAmount)).isEqualTo(expectedRateOfReturn);
