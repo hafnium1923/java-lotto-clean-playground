@@ -36,10 +36,9 @@ public class LottoController {
         outputView.printPurchaseLotto(numberOfTickets, lottoTickets);
 
         List<LottoNumber> winningNumbers = inputView.getWinningNumbers();
+        LottoNumber bonusNumber = inputView.getBonusNumber(winningNumbers);
 
-        LottoResult lottoResult = calculateLottoResult(lottoTickets, winningNumbers);
+        LottoResult lottoResult = calculateLottoResult(lottoTickets, winningNumbers,bonusNumber);
         outputView.printLottoResult(lottoResult, purchaseAmount);
     }
-
-
 }
