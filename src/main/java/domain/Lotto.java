@@ -14,34 +14,31 @@ public class Lotto {
         return amount / LOTTO_PRICE;
     }
 
-    public List<List<Integer>> generateLottoTickets(int numberOfTickets) {
-        List<List<Integer>> tickets = new ArrayList<>();
+    public List<LottoTicket> generateLottoTickets(int numberOfTickets) {
+        List<LottoTicket> tickets = new ArrayList<>();
         for (int i = 0; i < numberOfTickets; i++) {
-            List<Integer> ticket = generateSingleLottoTicket();
+            LottoTicket ticket = generateSingleLottoTicket();
             tickets.add(ticket);
         }
-
         return tickets;
     }
 
-    private List<Integer> generateSingleLottoTicket() {
-        List<Integer> numbersPool = createNumbersPool();
+    private LottoTicket generateSingleLottoTicket() {
+        List<LottoNumber> numbersPool = createNumbersPool();
         Collections.shuffle(numbersPool);
-        List<Integer> ticket = new ArrayList<>();
+        List<LottoNumber> selectedNumbers = new ArrayList<>();
         for (int i = 0; i < LOTTO_NUMBER_COUNT; i++) {
-            ticket.add(numbersPool.get(i));
+            selectedNumbers.add(numbersPool.get(i));
         }
-        Collections.sort(ticket);
-
-        return ticket;
+        Collections.sort(selectedNumbers);
+        return new LottoTicket(selectedNumbers);
     }
 
-    public List<Integer> createNumbersPool() {
-        List<Integer> numbers = new ArrayList<>();
+    public List<LottoNumber> createNumbersPool() {
+        List<LottoNumber> numbers = new ArrayList<>();
         for (int number = MIN_LOTTO_NUMBER; number <= MAX_LOTTO_NUMBER; number++) {
-            numbers.add(number);
+            numbers.add(new LottoNumber(number));
         }
-
         return numbers;
     }
 }
