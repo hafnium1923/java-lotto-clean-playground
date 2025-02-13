@@ -18,11 +18,13 @@ public class InputView {
                 int amount = Integer.parseInt(input);
                 if (amount > 0 && amount % Lotto.LOTTO_PRICE == 0) {
                     return amount;
+                } else {
+                    throw new IllegalArgumentException("로또는 " + Lotto.LOTTO_PRICE+"원 단위로 구매해야합니다.");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("1000원 단위 유효한 숫자를 입력해주세요. 다시 시도해주세요.");
             } catch (IllegalArgumentException e) {
-                System.out.println("유효한 형식으로 입력해주세요. 다시 시도해주세요.");
+                System.out.println(e.getMessage() + "다시 시도해주세요.");
             }
         }
     }
