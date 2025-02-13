@@ -21,6 +21,8 @@ public class InputView {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("1000원 단위 유효한 숫자를 입력해주세요. 다시 시도해주세요.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("유효한 형식으로 입력해주세요. 다시 시도해주세요.");
             }
         }
     }
@@ -49,7 +51,7 @@ public class InputView {
                 String input = scanner.nextLine();
                 try {
                     String[] tokens = input.split(",");
-                    if (tokens.length != 6) {
+                    if (tokens.length != Lotto.LOTTO_NUMBER_COUNT) {
                         throw new IllegalArgumentException("로또 번호는 6개여야 합니다.");
                     }
 
@@ -61,7 +63,7 @@ public class InputView {
 
 
                     long distinctCount = manualNumbers.stream().distinct().count();
-                    if (distinctCount != 6) {
+                    if (distinctCount != Lotto.LOTTO_NUMBER_COUNT) {
                         throw new IllegalArgumentException("로또 번호는 중복될 수 없습니다.");
                     }
 
@@ -82,7 +84,7 @@ public class InputView {
             String input = scanner.nextLine();
             try {
                 String[] tokens = input.split(",");
-                if (tokens.length != 6) {
+                if (tokens.length != Lotto.LOTTO_NUMBER_COUNT) {
                     throw new IllegalArgumentException("당첨 번호는 6개여야 합니다.");
                 }
 
@@ -93,7 +95,7 @@ public class InputView {
                 }
 
                 long distinctCount = winningNumbers.stream().distinct().count();
-                if (distinctCount != 6) {
+                if (distinctCount != Lotto.LOTTO_NUMBER_COUNT) {
                     throw new IllegalArgumentException("당첨 번호는 중복될 수 없습니다.");
                 }
 
@@ -118,6 +120,7 @@ public class InputView {
 
                 return bonusNumber;
             } catch (IllegalArgumentException e) {
+                System.out.print(e.getMessage());
                 System.out.println("유효한 숫자를 입력해주세요.");
             }
         }

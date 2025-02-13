@@ -21,10 +21,6 @@ public enum Prize {
         return matchCount;
     }
 
-    public boolean isHasBonus() {
-        return hasBonus;
-    }
-
     public long getPrizeAmount() {
         return prizeAmount;
     }
